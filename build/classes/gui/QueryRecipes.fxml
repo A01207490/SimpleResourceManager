@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.291" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.RecipesController">
+   <children>
+      <BorderPane prefHeight="508.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <VBox prefHeight="200.0" prefWidth="222.0" spacing="10.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <Label text="Resource:" />
+                        <ComboBox prefWidth="150.0" />
+                        <Label text="Location:" />
+                        <ComboBox prefWidth="150.0" />
+                        <Button mnemonicParsing="false" text="Submit" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <TableView fx:id="RecipeTable">
+                    <columns>
+                      <TableColumn fx:id="nameColumn" text="Name" />
+                      <TableColumn fx:id="statColumn" prefWidth="75.0" text="Stat" />
+                        <TableColumn fx:id="potencyColumn" prefWidth="75.0" text="Potency" />
+                        <TableColumn fx:id="durationColumn" prefWidth="75.0" text="Duration" />
+                        <TableColumn fx:id="resourcesColumn" prefWidth="75.0" text="Resources" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </center>
+         <top>
+            <Button mnemonicParsing="false" onAction="#switchToMenu" text="Return" BorderPane.alignment="TOP_LEFT">
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </Button>
+         </top>
+      </BorderPane>
+   </children>
+</AnchorPane>
