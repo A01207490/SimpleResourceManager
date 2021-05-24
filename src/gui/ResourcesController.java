@@ -32,6 +32,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.controlsfx.control.textfield.TextFields;
 import parallel.Analysis;
 import prolog.PrologQuery;
 
@@ -43,6 +44,8 @@ public class ResourcesController {
 	private ListView<String> resourcesListView;
 	@FXML
 	private Button addButton;
+        @FXML
+	private TextField textFieldResourceFilter;
 	@FXML
 	private TextField resourceTextField;
 	private ArrayList<String> resourceCatalog;
@@ -50,10 +53,12 @@ public class ResourcesController {
 	//private String fileLocations = System.getProperty("user.dir") + "\\src\\application\\locations.pl";
         private String fileResources = "pl\\resources.pl";
         private String fileLocations = "pl\\locations.pl";
+        
 
 	public void initialize() {
 		addButton.setDisable(true);
 		initializeListView();
+                
 		// resourcesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
@@ -63,6 +68,7 @@ public class ResourcesController {
                 Collections.sort(resourceCatalog);
 		if (resourceCatalog != null) {
 			resourcesListView.getItems().addAll(resourceCatalog);
+                        TextFields.bindAutoCompletion(textFieldResourceFilter, resourceCatalog);
 		}
 	}
 
@@ -124,7 +130,29 @@ public class ResourcesController {
 		}
 
 	}
-
+        
+        public void onActionFilter(){
+                String selectedResource = textFieldResourceFilter.getText();
+                selectedResource = selectedResource.trim();
+                boolean noMatch = true;
+                resourcesListView.getItems().clear();
+                for (int i = 0; i < resourceCatalog.size(); i++) {
+                        if(resourceCatalog.get(i).toLowerCase().contains(selectedResource.toLowerCase())){
+                                resourcesListView.getItems().addAll(resourceCatalog.get(i));
+                                noMatch = false;
+                        }
+                }
+                if(noMatch){
+                        resourcesListView.getItems().addAll(resourceCatalog);
+                }
+        }
+        
+        public void onActionClear(){
+                resourcesListView.getItems().clear();
+                resourcesListView.getItems().addAll(resourceCatalog);
+                textFieldResourceFilter.setText("");
+        }
+        
 	public void alertError(String header, String text) {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");

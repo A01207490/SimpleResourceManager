@@ -32,6 +32,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.controlsfx.control.textfield.TextFields;
 import parallel.Analysis;
 import prolog.PrologQuery;
 
@@ -44,6 +45,8 @@ public class LandmarksController {
 	@FXML
 	private Button addButton;
 	@FXML
+	private TextField textFieldLandmarkFilter;
+        @FXML
 	private TextField landmarkTextField;
 
 	private String file = "pl\\landmarks.pl";
@@ -61,6 +64,7 @@ public class LandmarksController {
 		Collections.sort(landmarkCatalog);
 		if (landmarkCatalog != null) {
 			landmarksListView.getItems().addAll(landmarkCatalog);
+                        TextFields.bindAutoCompletion(textFieldLandmarkFilter, landmarkCatalog);
 		}
 	}
 
@@ -114,6 +118,28 @@ public class LandmarksController {
 		}
 
 	}
+        
+        public void onActionFilter(){
+                String selectedResource = textFieldLandmarkFilter.getText();
+                selectedResource = selectedResource.trim();
+                boolean noMatch = true;
+                landmarksListView.getItems().clear();
+                for (int i = 0; i < landmarkCatalog.size(); i++) {
+                        if(landmarkCatalog.get(i).toLowerCase().contains(selectedResource.toLowerCase())){
+                                landmarksListView.getItems().addAll(landmarkCatalog.get(i));
+                                noMatch = false;
+                        }
+                }
+                if(noMatch){
+                        landmarksListView.getItems().addAll(landmarkCatalog);
+                }
+        }
+        
+        public void onActionClear(){
+                landmarksListView.getItems().clear();
+                landmarksListView.getItems().addAll(landmarkCatalog);
+                textFieldLandmarkFilter.setText("");
+        }
 
 	public void alertError(String header, String text) {
 		Alert alert = new Alert(AlertType.ERROR);

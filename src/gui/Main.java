@@ -115,13 +115,14 @@ public class Main extends Application {
 			}
 		}
 		*/
-
+                /*
 		String entry = "Gerudo Highlands";
 		System.out.println(entry);
 		System.out.println(PrologQuery.isEntryALandmark(entry));
 		// Don't add simple quotations.
 		System.out.println(Analysis.addSimpleQuotationMarks(entry));
 		System.out.println(PrologQuery.isEntryALandmark(Analysis.addSimpleQuotationMarks(entry)));
+                */
 
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));

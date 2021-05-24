@@ -156,7 +156,8 @@ public class LocationController {
 	}
 
 	public void insert(ActionEvent event) {
-		String entry = Analysis.formatEntry4(landmarkComboBox.getValue());
+		// String entry = Analysis.formatEntry4(landmarkComboBox.getValue());
+                String entry = landmarkComboBox.getValue();
 		System.out.println(entry);
 		if (PrologQuery.isEntryALandmark(entry)) {
 			entry = Analysis.addSimpleQuotationMarks(entry);

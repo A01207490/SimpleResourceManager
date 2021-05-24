@@ -24,32 +24,47 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Analysis {
 	private String origin;
-	private String landmarks[];
-	private ArrayList<String> destinations;
+	private String[] landmarks;
+	private String[] destinations;
 	private ArrayList<String[]> paths;
+        private Map<Integer, ArrayList<String[]>> sortedRoutes;
 	private int pair_len, pair_pos;
 	private int odd_len, odd_pos;
+	private int min, max;
 
-	public Analysis() {
+        public int getMin() {
+                return min;
+        }
+
+        public void setMin(int min) {
+                this.min = min;
+        }
+
+        public int getMax() {
+                return max;
+        }
+
+        public void setMax(int max) {
+                this.max = max;
+        }
+
+	public Analysis(String[] landmarks) {
+                this.landmarks = landmarks;
 		paths = new ArrayList<String[]>();
-		destinations = new ArrayList<String>();
-	}
+		destinations = new String[landmarks.length];
+                sortedRoutes = new TreeMap<Integer, ArrayList<String[]>>(); 
+	}  
 
-	public void initialize_paths() {
-		for (int i = 0; i < landmarks.length; i++) {
-			paths.add(new String[0]);
-		}
-	}
-
-	public void initialize_destinations() {
-		for (int i = 0; i < paths.size() / 2; i++) {
-			destinations.add("");
-		}
-	}
-
+        public Map<Integer, ArrayList<String[]>> getSortedRoutes() {
+                return sortedRoutes;
+        }
+       
 	public static void deleteEntry(String file, String type, String entry) {
 		BufferedReader reader;
 		BufferedWriter writer;
@@ -250,8 +265,10 @@ public class Analysis {
 
 	public ArrayList<String[]> getPaths() {
 		return paths;
-	}
-
+	}     
+        
+     
+        
 	public void setPaths(ArrayList<String[]> paths) {
 		this.paths = paths;
 	}
@@ -296,11 +313,11 @@ public class Analysis {
 		this.odd_pos = odd_pos;
 	}
 
-	public ArrayList<String> getDestinations() {
+	public String[] getDestinations() {
 		return destinations;
 	}
 
-	public void setDestinations(ArrayList<String> destinations) {
+	public void setDestinations(String[] destinations) {
 		this.destinations = destinations;
 	}
 }

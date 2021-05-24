@@ -195,12 +195,12 @@ public class PrologQuery {
 		}
                 LinkedHashSet<String> hashSet = new LinkedHashSet<>(arrayList);
                 ArrayList<String> arrayListWithoutDuplicates = new ArrayList<>(hashSet);
-                System.out.println(arrayListWithoutDuplicates);
+                //System.out.println(arrayListWithoutDuplicates);
                 for (int i = 0; i < arrayListWithoutDuplicates.size(); i++) {
                 
                     String get = arrayListWithoutDuplicates.get(i);
-                    System.out.println(get);
-                            }
+                    //System.out.println(get);
+                }
 		return arrayListWithoutDuplicates;
 	}
 

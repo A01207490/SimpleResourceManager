@@ -17,10 +17,17 @@
             <VBox spacing="10.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Resources" />
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <TextField fx:id="textFieldResourceFilter" />
+                        <Button mnemonicParsing="false" onAction="#onActionFilter" text="Filter" />
+                        <Button mnemonicParsing="false" onAction="#onActionClear" text="Clear" />
+                     </children>
+                  </HBox>
                   <ListView fx:id="resourcesListView" />
                   <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
-                        <Label text="Resource" />
+                        <Label text="New resource" />
                         <TextField fx:id="resourceTextField" onKeyReleased="#keyReleasedTextField" />
                         <Button fx:id="addButton" mnemonicParsing="false" onAction="#insert" text="Add" />
                         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#delete" text="Delete" />

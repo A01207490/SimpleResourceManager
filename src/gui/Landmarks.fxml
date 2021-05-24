@@ -17,10 +17,17 @@
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Landmarks" />
+                  <HBox spacing="10.0">
+                     <children>
+                        <TextField fx:id="textFieldLandmarkFilter" />
+                        <Button mnemonicParsing="false" onAction="#onActionFilter" text="Filter" />
+                        <Button mnemonicParsing="false" onAction="#onActionClear" text="Clear" />
+                     </children>
+                  </HBox>
                   <ListView fx:id="landmarksListView" />
                   <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
-                        <Label text="Landmark" />
+                        <Label text="New landmark" />
                         <TextField fx:id="landmarkTextField" onKeyReleased="#keyReleasedTextField" />
                         <Button fx:id="addButton" mnemonicParsing="false" onAction="#insert" text="Add" />
                         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#delete" text="Delete" />

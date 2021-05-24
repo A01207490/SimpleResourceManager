@@ -153,12 +153,15 @@ public class PathController {
 		try {
 			Boolean entryIsLandmark = false;
 			Boolean newDestination = true;
-			String entry = Analysis.formatEntry4(availableDestinationsComboBox.getValue());
+			// String entry = Analysis.formatEntry4(availableDestinationsComboBox.getValue());
+                        // don't format the string
+                        String entry = availableDestinationsComboBox.getValue();
 			for (String string : destinationsArrayStrings) {
 				if (entry.equals(string)) {
 					newDestination = false;
 				}
 			}
+                        System.out.println(entry);
 			entryIsLandmark = PrologQuery.isEntryALandmark(entry);
 			if (entryIsLandmark && newDestination) {
 				entry = Analysis.addSimpleQuotationMarks(entry);

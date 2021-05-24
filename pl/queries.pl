@@ -3,6 +3,7 @@
 :-include('locations.pl').
 :-include('routes.pl').
 :-include('recipes.pl').
+:-use_module(library(lists)). 
 % consult('queries.pl').
 getRecipes(Name,Stat,Potency,Duration,Resources,[Name,Stat,Potency,Duration,Resources]):-
     recipe(Name,Stat,Potency,Duration,Resources).
@@ -53,14 +54,53 @@ getAvailableLandmarks(Landmark,AvailableLandmark):-
     not(AvailableLandmark == Landmark),
     not(member(AvailableLandmark,Destinations)).
 shortestRoute(X,Y,P):-
-    bfs_a(Y,[d(X,[])],R),
-    reverse(R,P1),
-    P = [X|P1],!.
-bfs_a(Y,[d(Y,P)|_],P).
-bfs_a(Y,[d(S,P1)|Ns],P) :-
-    findall(d(S1,[S1|P1]),route(S,S1),Es),
+    bfs4(X,Y,P).
+% this one gets stuck
+bfs1(X,Y,P):-
+    bfs_a(Y,[n(X,[])],R),
+    reverse(R,P).    
+bfs_a(Y,[n(Y,P)|_],P).
+bfs_a(Y,[n(S,P1)|Ns],P) :-
+    findall(n(S1,[S1|P1]),route(S,S1),Es),
     append(Ns,Es,O),
     bfs_a(Y,O,P).
+bfs2(X,Y,P) :-
+    bfs_b(Y,[n(X,[])],[],R),
+    reverse(R,P).
+    bfs_b(Y,[n(Y,P)|_],_,P).
+bfs_b(Y,[n(S,P1)|Ns],C,P) :-
+    findall(n(S1,[S1|P1]),
+    (route(S,S1),
+    \+ member(S1,C)),
+    Es),
+    append(Ns,Es,O),
+    bfs_b(Y,O,[S|C],P). 
+bfs3(X,Y,P) :-
+    bfs_c(Y,[n(X,[])],[n(X,[])],R),
+    reverse(R,P).
+    bfs_c(Y,[n(Y,P)|_],_,P).
+bfs_c(Y,[n(S,P1)|Ns],C,P) :-
+    findall(n(S1,[S1|P1]),
+    (route(S,S1),
+    \+ member(n(S1,_),C)),
+    Es),
+    append(Ns,Es,O),
+    append(C,Es,C1),
+    bfs_c(Y,O,C1,P).
+% this one works
+bfs4(X,Y,P):-
+    bfs_d(Y,[n(X,[])],[],R),
+    reverse(R,P).
+    bfs_d(Y,[n(Y,P)|_],_,P).
+bfs_d(Y,[n(S,P1)|Ns],C,P) :-
+    length(P1,L),
+    findall(n(S1,[S1|P1]),
+    (route(S,S1),
+    \+ (member(n(S1,P2),Ns), length(P2,L)),
+    \+ member(S1,C)),
+    Es),
+    append(Ns,Es,O),
+    bfs_d(Y,O,[S|C],P).
 path(Origin,Final_Destination,Path,_Crossed):-
     route(Origin,Final_Destination),
     Aux = [Final_Destination|[]],
@@ -71,6 +111,6 @@ path(Origin,Final_Destination,Path,Crossed):-
     UpdatedCrossed = [In_Between_Destination|Crossed],
     path(In_Between_Destination,Final_Destination,PreviousPath,UpdatedCrossed),
     Path = [Origin|PreviousPath].
-isDestinationReachable(Origin,Final_Destination):-
-    path(Origin,Final_Destination,_,[Origin|[]]),!.
+isDestinationReachable(Origin,Final_Destination,Path):-
+    path(Origin,Final_Destination,Path,[Origin|[]]),!.
 % consult('queries.pl').

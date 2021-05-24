@@ -17,7 +17,7 @@ public class Destinations implements Runnable {
 			path = kb.getPaths().get(i);
 			length = path.length;
 			destination = path[length - 1];
-			kb.getDestinations().add(i, destination);
+			//kb.getDestinations().add(i, destination);
 		}
 
 	}

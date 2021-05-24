@@ -16,6 +16,7 @@ along with Simple Videogame Resource Manager.  If not, see <https://www.gnu.org/
 */
 package parallel;
 
+import java.util.ArrayList;
 import parallel.Analysis;
 
 public class Worker implements Runnable {
@@ -31,11 +32,28 @@ public class Worker implements Runnable {
 		String path[];
 		String destination;
 		int length;
-		// System.out.println(kb.getPaths().size() / 2);
-		for (int i = 0; i < kb.getPaths().size() / 2; i++) {
+		// System.out.println(kb.getPaths().size());
+		for (int i = 0; i < kb.getPaths().size(); i++) {
 			path = kb.getPaths().get(i);
 			length = path.length;
-			if ((i % 2 == 0) && threadName == "Pair") {
+			if ((i % 2 == 0) && threadName.equals("Pair")) {
+                                
+                                synchronized(kb.getSortedRoutes()){
+                                        if(!kb.getSortedRoutes().containsKey(length)){
+                                                kb.getSortedRoutes().put(length, new ArrayList<String[]>());
+                                        }
+                                        kb.getSortedRoutes().get(length).add(path);
+                                        
+                                }
+                                /*
+                                
+                                if(length == 0){
+                                        destination = kb.getOrigin() + " (" + length + ")";
+                                }else{
+                                        destination = path[length-1] + " (" + length + ")";
+                                }
+                                kb.getDestinations()[i] = destination;
+                                // System.out.println("- " + kb.getDestinations()[i]);
 				if (i == 0) {
 					kb.setPair_len(length);
 					kb.setPair_pos(i);
@@ -45,7 +63,23 @@ public class Worker implements Runnable {
 						kb.setPair_pos(i);
 					}
 				}
-			} else if ((i % 2 != 0) && threadName == "Odd") {
+                                */
+			} else if ((i % 2 != 0) && threadName.equals("Odd")) {
+                                
+                                synchronized(kb.getSortedRoutes()){
+                                        if(!kb.getSortedRoutes().containsKey(length)){
+                                                kb.getSortedRoutes().put(length, new ArrayList<String[]>());
+                                        }
+                                        kb.getSortedRoutes().get(length).add(path);
+                                }
+                                /*
+                                if(length == 0){
+                                        destination = kb.getOrigin() + " (" + length + ")";
+                                }else{
+                                        destination = path[length-1] + " (" + length + ")";
+                                }
+                                kb.getDestinations()[i] = destination;
+                                System.out.println("[" + i + "] " + kb.getDestinations()[i]);
 				if (i == 1) {
 					kb.setOdd_len(length);
 					kb.setOdd_pos(i);
@@ -55,6 +89,7 @@ public class Worker implements Runnable {
 						kb.setOdd_pos(i);
 					}
 				}
+                                */
 			}
 
 		}
