@@ -17,7 +17,12 @@
             <VBox spacing="10.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Origin " />
-                  <ComboBox fx:id="originsComboBox" onAction="#onActionComboBoxOrigins" prefWidth="150.0" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <ComboBox fx:id="originsComboBox" onMouseClicked="#resetComponents" prefWidth="150.0" />
+                        <Button mnemonicParsing="false" onAction="#onActionComboBoxOrigins" text="Select" />
+                     </children>
+                  </HBox>
                   <Label text="Destinations" />
                   <ListView fx:id="destinationsListView" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">

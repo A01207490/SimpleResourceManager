@@ -616,7 +616,7 @@ route('Korok Forest','Mido Swamp').
 route('Korok Forest','Lost Woods').
 route('Lost Woods','Military Training Camp').
 route('Military Training Camp','Rauru Hillside').
-route('Rauru Settlement Ruins','crenel hills').
+route('Rauru Settlement Ruins','Crenel Hills').
 route('Quarry Ruins','Carok Bridge').
 route('Moat Bridge','Castle Town Prison').
 route('First Gatehouse','Princess Zeldas Study').
@@ -714,7 +714,7 @@ route('Mido Swamp','Korok Forest').
 route('Lost Woods','Korok Forest').
 route('Military Training Camp','Lost Woods').
 route('Rauru Hillside','Military Training Camp').
-route('crenel hills','Rauru Settlement Ruins').
+route('Crenel Hills','Rauru Settlement Ruins').
 route('Carok Bridge','Quarry Ruins').
 route('Castle Town Prison','Moat Bridge').
 route('Princess Zeldas Study','First Gatehouse').
@@ -1164,3 +1164,7 @@ route('Upland Zorana','Ternio Trail').
 route('Bannan Island','Quattas Shelf').
 route('Gut Check Rock','Eldins Flank').
 route('Eldins Flank','Gut Check Rock').
+route('Skull Valley','Skull Lake').
+route('Skull Lake','Skull Valley').
+route('Aaout2','Aaout1').
+route('Aaout1','Aaout2').

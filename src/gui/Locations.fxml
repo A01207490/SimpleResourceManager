@@ -17,7 +17,12 @@
             <VBox spacing="10.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="Resource" />
-                  <ComboBox fx:id="resourceComboBox" onAction="#onActionComboBoxResource" prefWidth="150.0" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <ComboBox fx:id="resourceComboBox" onMouseClicked="#resetComponents" prefWidth="150.0" />
+                        <Button mnemonicParsing="false" onAction="#onActionComboBoxResource" text="Select" />
+                     </children>
+                  </HBox>
                   <Label text="Found at" />
                   <ListView fx:id="landmarkListView" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">

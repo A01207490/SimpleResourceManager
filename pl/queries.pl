@@ -2,6 +2,7 @@
 :-include('landmarks.pl').
 :-include('locations.pl').
 :-include('routes.pl').
+:-include('routes-java.pl').
 :-include('recipes.pl').
 :-use_module(library(lists)). 
 % consult('queries.pl').
@@ -13,6 +14,8 @@ getLandmarks(Landmark):-
     landmark(Landmark).
 getResources(Resource):-
     resource(Resource).
+getRoutesJava([Origin,Destionation]):-
+    route_java(Origin,Destionation).
 getLandmarksWhereResourceIsFound(Resource,Landmarks):-
     location(LocationResource,Landmarks),
     Resource == LocationResource,!.
@@ -113,4 +116,12 @@ path(Origin,Final_Destination,Path,Crossed):-
     Path = [Origin|PreviousPath].
 isDestinationReachable(Origin,Final_Destination,Path):-
     path(Origin,Final_Destination,Path,[Origin|[]]),!.
+count([_|Rest],Result):-
+    Rest == [],
+    Result = 1;
+    count(Rest,ResultAux),
+    Result is ResultAux + 1.
+getSumLocations(Sum):-
+    location(_,Landmarks),
+    count(Landmarks,Sum).
 % consult('queries.pl').

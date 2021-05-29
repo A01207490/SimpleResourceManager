@@ -16,6 +16,8 @@ along with Simple Videogame Resource Manager.  If not, see <https://www.gnu.org/
 */
 package gui;
 
+import java.util.List;
+import java.util.Map;
 import prolog.PrologQuery;
 import parallel.Analysis;
 import javafx.application.Application;
@@ -23,6 +25,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.jpl7.Term;
+import parallel.Graph;
 
 public class Main extends Application {
 
@@ -123,7 +127,21 @@ public class Main extends Application {
 		System.out.println(Analysis.addSimpleQuotationMarks(entry));
 		System.out.println(PrologQuery.isEntryALandmark(Analysis.addSimpleQuotationMarks(entry)));
                 */
-
+                /*
+                Map<String, Term>[] solutions = PrologQuery.getSumLocations();
+                float sum = 0;
+                float count = 0;
+                float length = solutions.length;
+                for (int i = 0; i < length; i++) {
+			int amount = Integer.parseInt(solutions[i].get("X").toString());
+                        if(amount > 30 && amount < 40){
+                                count++;
+                                System.out.printf("%d = %d\n", i, amount);
+                                sum += amount;
+                        }
+		}
+                System.out.printf("%.1f percent, avg = %f\n", (count/length*100), sum/count);
+                */
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 			Scene scene = new Scene(root);

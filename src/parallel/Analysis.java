@@ -34,9 +34,12 @@ public class Analysis {
 	private String[] destinations;
 	private ArrayList<String[]> paths;
         private Map<Integer, ArrayList<String[]>> sortedRoutes;
+        private boolean cannotReachDestinations; 
+        //
 	private int pair_len, pair_pos;
 	private int odd_len, odd_pos;
 	private int min, max;
+        
 
         public int getMin() {
                 return min;
@@ -59,7 +62,20 @@ public class Analysis {
 		paths = new ArrayList<String[]>();
 		destinations = new String[landmarks.length];
                 sortedRoutes = new TreeMap<Integer, ArrayList<String[]>>(); 
+                cannotReachDestinations = false;
 	}  
+
+        public boolean isCannotReachDestinations() {
+                return cannotReachDestinations;
+        }
+
+        public void setCannotReachDestinations(boolean cannotReachDestinations) {
+                this.cannotReachDestinations = cannotReachDestinations;
+        }
+
+        public void setSortedRoutes(TreeMap<Integer, ArrayList<String[]>> sortedRoutes) {
+                this.sortedRoutes = sortedRoutes;
+        }
 
         public Map<Integer, ArrayList<String[]>> getSortedRoutes() {
                 return sortedRoutes;
@@ -155,12 +171,12 @@ public class Analysis {
 
 	}
 
-	public static void deletePath(String file, String origin, String destination) {
+	public static void deletePath(String file, String route, String origin, String destination) {
 		BufferedReader reader;
 		BufferedWriter writer;
 		String contents = "";
-		String route1 = "route(" + origin + "," + destination + ").";
-		String route2 = "route(" + destination + "," + origin + ").";
+		String route1 = route + "(" + origin + "," + destination + ").";
+		String route2 = route + "(" + destination + "," + origin + ").";
 		System.out.println("Going to delete path.");
 		System.out.println(route1);
 		System.out.println(route2);

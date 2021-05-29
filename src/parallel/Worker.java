@@ -21,9 +21,12 @@ import parallel.Analysis;
 
 public class Worker implements Runnable {
 	private Analysis kb;
+        private int start, end;
 
-	public Worker(Analysis kb) {
+	public Worker(Analysis kb, int start, int end) {
 		this.kb = kb;
+                this.start = start;
+                this.end = end;
 	}
 
 	@Override
@@ -33,11 +36,12 @@ public class Worker implements Runnable {
 		String destination;
 		int length;
 		// System.out.println(kb.getPaths().size());
-		for (int i = 0; i < kb.getPaths().size(); i++) {
+		//for (int i = 0; i < kb.getPaths().size(); i++) {
+                for (int i = start; i < end; i++) {
 			path = kb.getPaths().get(i);
 			length = path.length;
-			if ((i % 2 == 0) && threadName.equals("Pair")) {
-                                
+                        //System.out.println(path[length-1]);
+			//if ((i % 2 == 0) && threadName.equals("Pair")) {
                                 synchronized(kb.getSortedRoutes()){
                                         if(!kb.getSortedRoutes().containsKey(length)){
                                                 kb.getSortedRoutes().put(length, new ArrayList<String[]>());
@@ -46,7 +50,6 @@ public class Worker implements Runnable {
                                         
                                 }
                                 /*
-                                
                                 if(length == 0){
                                         destination = kb.getOrigin() + " (" + length + ")";
                                 }else{
@@ -64,14 +67,15 @@ public class Worker implements Runnable {
 					}
 				}
                                 */
-			} else if ((i % 2 != 0) && threadName.equals("Odd")) {
-                                
+			//} else if ((i % 2 != 0) && threadName.equals("Odd")) {
+                                /*
                                 synchronized(kb.getSortedRoutes()){
                                         if(!kb.getSortedRoutes().containsKey(length)){
                                                 kb.getSortedRoutes().put(length, new ArrayList<String[]>());
                                         }
                                         kb.getSortedRoutes().get(length).add(path);
                                 }
+                                */
                                 /*
                                 if(length == 0){
                                         destination = kb.getOrigin() + " (" + length + ")";
@@ -90,9 +94,7 @@ public class Worker implements Runnable {
 					}
 				}
                                 */
-			}
-
+			//}
 		}
 	}
-
 }

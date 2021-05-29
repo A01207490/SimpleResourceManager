@@ -27,6 +27,7 @@ import org.jpl7.Compound;
 import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Variable;
+import parallel.Graph;
 
 public class PrologQuery {
 	public Map<String, Term>[] solutions;
@@ -74,6 +75,11 @@ public class PrologQuery {
 	public static String[] getLandmarksWhereResourceIsFound(String resource) {
 		Query query = new Query("getLandmarksWhereResourceIsFound", new Term[] { new Atom(resource), new Variable("X") });
 		return getSolution(query);
+	}
+        
+        public static Map<String, Term>[] getSumLocations() {
+		Query query = new Query("getSumLocations", new Term[] { new Variable("X") });
+		return getSolutions(query);
 	}
 
 	public static String[] getListOfDestinationsOfLandmark(String landmarkString) {
@@ -250,11 +256,14 @@ public class PrologQuery {
 		String stat, name, resources;
 		int potency, duration;
 		ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+                
 		Pattern p = Pattern.compile("^(\\[\\')(.*)(\\'\\, \\')(.*)(\\'\\, )(.*)(\\, )(.*)(\\, \\[)(.*)(\\]\\])");
 		Matcher m;
 		for (int i = 0; i < solutions.length; i++) {
 			// System.out.println("X = " + solutions[i].get("X").toString());
 			m = p.matcher(solutions[i].get("X").toString());
+                        System.out.println(solutions[i].get("X").toString());
+                        System.out.println("Emoji");
 			if (m.find()) {
 				name = m.group(2);
 				stat = m.group(4);
@@ -263,10 +272,35 @@ public class PrologQuery {
 				resources = m.group(10).replace("'", "");
 				recipes.add(new Recipe(name, stat, potency, duration, resources));
 			} else {
-				System.out.println("NO MATCH");
+				//System.out.println("NO MATCH");
 			}
 		}
 		return recipes;
+	}
+        
+        public static Graph getMap() {
+                Graph map = new Graph();
+                ArrayList<ArrayList<String>> adj = new ArrayList<ArrayList<String>>();
+		Query query = new Query("getRoutesJava(X).");
+		Map<String, Term>[] solutions = getSolutions(query);
+		String landmark1, landmark2, resources;
+		Pattern p = Pattern.compile("^(\\[\\')(.*)(\\'\\,)(.*)(\\')(.*)(\\'\\])");
+		Matcher m;
+		for (int i = 0; i < solutions.length; i++) {
+                        adj.add(new ArrayList<String>());
+			// System.out.println("X = " + solutions[i].get("X").toString());
+			m = p.matcher(solutions[i].get("X").toString());
+                        // System.out.println(solutions[i].get("X").toString());
+			if (m.find()) {
+				landmark1 = m.group(2);
+				landmark2 = m.group(6);
+                                // pathUnweighted.addEdge(adj, 0, 1);
+				map.addEdge(landmark1,landmark2);
+			} else {
+				System.out.println("NO MATCH");
+			}
+		}
+                return map;
 	}
 
 }

@@ -34,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import parallel.Analysis;
@@ -94,21 +95,33 @@ public class LocationController {
 	public void initialize() {
 		initializeComboBox();
 		setDisableButtons(true);
+                landmarkListView.setPlaceholder(new Label("Please select a resource."));
 	}
 
 	public void initializeListView() {
-		landmarkListView.getItems().clear();
                 PrologQuery.isEntryAResource(resourceString);
 		if (PrologQuery.isEntryAResource(resourceString)) {
                         landmarkArrayStrings = PrologQuery.getLandmarksWhereResourceIsFound(resourceString);
-			landmarkListView.getItems().addAll(landmarkArrayStrings);
+                        if(landmarkArrayStrings.length == 0){
+                                landmarkListView.getItems().clear();
+                                landmarkListView.setPlaceholder(new Label("No associated landmarks found."));
+                        }else{
+                                landmarkListView.getItems().clear();
+                                landmarkListView.getItems().addAll(landmarkArrayStrings);
+                        }
 			setDisableButtons(false);
 		} else {
 			setDisableButtons(true);
 			alertError("Invalid entry.", "Please enter a valid resource.");
 		}
 	}
-
+        
+        public void resetComponents(){
+                landmarkListView.getItems().clear();
+		setDisableButtons(true);
+                landmarkListView.setPlaceholder(new Label("Please select a resource."));
+        }
+        
 	public void setDisableButtons(Boolean val) {
 		addButton.setDisable(val);
 		deleteButton.setDisable(val);

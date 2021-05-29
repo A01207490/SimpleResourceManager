@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.controlsfx.control.textfield.TextFields;
 
@@ -44,7 +46,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import parallel.Analysis;
-import parallel.Destinations;
+import parallel.Graph;
+import parallel.ShortestRoute;
 import parallel.Worker;
 import prolog.PrologQuery;
 
@@ -96,10 +99,8 @@ public class QueryController {
 	private ArrayList<String> landmarksList;
 
 	public void initialize() {
-                
 		submit.setDisable(true);
 		resourcesList = PrologQuery.getResourcesThatHaveLocations();
-               
 		//landmarksList = PrologQuery.getLandmarks();
 		landmarksList = PrologQuery.getLandmarksUsedInRoutes();
                 Collections.sort(resourcesList);
@@ -138,17 +139,22 @@ public class QueryController {
 			// TODO: handle exception
 		}
 	}
-
+        
+        private long singleThreadedJava = 0, multiThreadedJava = 0, singleThreadedProlog = 0;
+        private String closestDestinationString, origin;
+        private  Analysis kb;
+        // Shortest path and list of detinations with lengths.
+        private String[] path, destinations;
+        private Graph map = PrologQuery.getMap();
+        
 	public void sumbit(ActionEvent event) {
                 pathListView.getItems().clear();
                 landmarksListView.getItems().clear();
                 resourcesListView.getItems().clear();
                 closestDestination.setText("");
-		// resourceString = resource.getText();
-		// landmarkString = landmark.getText();
 		resourceString = resourceComboBox.getValue();
 		landmarkString = landmarkComboBox.getValue();
-		String origin = landmarkString;
+		origin = landmarkString;
 		String resource = resourceString;
 		if (!PrologQuery.isEntryAResource(resourceString)) {
 			Alert alert = new Alert(AlertType.WARNING);
@@ -166,57 +172,100 @@ public class QueryController {
 			alert.showAndWait();
 			return;
 		}
-		// Get all the landmarks where you can find the resource
-                Analysis kb = new Analysis(PrologQuery.getLandmarksWhereResourceIsFound(resource));
-		kb.setOrigin(origin);
-                // System.out.println("Landmarks where resource is found");
-		// kb.setLandmarks(PrologQuery.getLandmarksWhereResourceIsFound(resource));
-                for (int i = 0; i < kb.getLandmarks().length; i++) {
-			//System.out.println("- " + kb.getLandmarks()[i]);
-		}
-                  
-		String path[] = null;
-		String destination;
                 long start, end;
-                start = System.currentTimeMillis();
-		// Obtain all the shortest paths from the origin to the landmarks where you can find the resource
-		for (int i = 0; i < kb.getLandmarks().length; i++) {
-			destination = kb.getLandmarks()[i];
-			// System.out.println("Destination: " + destination);
-                        path = PrologQuery.shortestRoute(origin, destination);
-                        if(path != null){
-                            //path = PrologQuery.shortestRoute(origin, destination);
-                            kb.getPaths().add(path);
+		String destination;
+		//*****Get all the landmarks where you can find the resource
+                kb = new Analysis(PrologQuery.getLandmarksWhereResourceIsFound(resource));
+		kb.setOrigin(origin);
+                initializePaths(kb);
+                int n = 1;
+                long sum1TP = 0;
+                long sum1TJ = 0;
+                long sum2TJ = 0;
+                long sum3TJ = 0;
+                long sum4TJ = 0;
+                long sumQTJ = 0;
+                long interruption;
+                for (int i = 0; i < n; i++) {
+                        //*****Single threaded shortest route prolog
+                        //sum1TP += singleThreadedSetShortestRouteProlog();
+                        //*****Single threaded shortest route java
+                        //interruption = singleThreadedSetShortestRouteJava();
+                        /*
+                        if(interruption == -10){
+                                //System.out.println(interruption);
+                                return;
                         }else{
-                            alertError("Incomplete map.", "Cannot reach destinations from origin.");
-                            return;
-                        } 
-                      
-                        
-		}
-                end = System.currentTimeMillis();
-                System.out.println("Finished after: " + (end-start) + " miliseconds\n");
-		Thread thread1 = new Thread(new Worker(kb), "Pair");
-		Thread thread2 = new Thread(new Worker(kb), "Odd");
-		Thread thread3 = new Thread(new Destinations(kb), "Destinations");
-                System.out.println("Origin: " + origin);
-                
-                long startTime, endTime, singleThreaded, multiThreaded;
-                startTime = System.currentTimeMillis();
-		thread1.start();
-		thread2.start();
+                                //System.out.println(interruption);
+                                sum1TJ += interruption;
+                        }
+                        */
+                        //*****Two threaded shortest route java
+                        sum2TJ += multiThreadedSetShortestRouteJava(2);
+                        if(kb.isCannotReachDestinations()){
+                                alertError("Incomplete map.", "Cannot reach destinations from origin.");
+                                return;
+                        }
+                        //*****Three threaded shortest route java
+                        //sum3TJ += multiThreadedSetShortestRouteJava(3);
+                        //*****Four threaded shortest route java
+                        //sum4TJ += multiThreadedSetShortestRouteJava(4);
+                        //*****Amount of destinations threaded shortest route java
+                        //sumQTJ +=  multiThreadedSetShortestRouteJava(kb.getLandmarks().length);
+                }
+                float avg1TProlog = sum1TP / n;
+                float avg1TJava = sum1TJ / n;
+                float avg2TJava = sum2TJ / n;
+                float avg3TJava = sum3TJ / n;
+                float avg4TJava = sum4TJ / n;
+                float avgQTJava = sumQTJ / n;
+                System.out.printf("\nQuerying %d paths\n1TP = %fms\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n%dTJ = %fms\n", kb.getLandmarks().length, avg1TProlog, avg1TJava, avg2TJava, avg3TJava, avg4TJava, kb.getLandmarks().length, avgQTJava);
+                //*****Sort
+                n = 100;
+                sum1TJ = 0;
+                sum2TJ = 0;
+                sum3TJ = 0;
+                sum4TJ = 0;
+                for (int i = 0; i < n; i++) {
+                        //*****Single threaded shortest route java
+                        kb.getSortedRoutes().clear();
+                        sum1TJ += sortPaths(1);
+                        //*****Two threaded shortest route java
+                        kb.getSortedRoutes().clear();
+                        sum2TJ += sortPaths(2);
+                        //*****Three threaded shortest route java
+                        kb.getSortedRoutes().clear();
+                        sum3TJ += sortPaths(3);
+                        //*****Four threaded shortest route java
+                        kb.getSortedRoutes().clear();
+                        sum4TJ += sortPaths(4);
+                }
+                buildDestinationsWithLength();
+                avg1TJava = sum1TJ / n;
+                avg2TJava = sum2TJ / n;
+                avg3TJava = sum3TJ / n;
+                avg4TJava = sum4TJ / n;
+                System.out.printf("\nSorting %d paths\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n", kb.getLandmarks().length, avg1TJava, avg2TJava, avg3TJava, avg4TJava);
+                /*
+		Thread thread3 = new Thread(new Worker(kb), "Pair");
+		Thread thread4 = new Thread(new Worker(kb), "Odd");
+                start = System.currentTimeMillis();
+		thread3.start();
+		thread4.start();
 		try {
-			thread1.join();
-			thread2.join();
+			thread3.join();
+			thread4.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-                endTime = System.currentTimeMillis();
-                multiThreaded = endTime - startTime;
-		System.out.println("Finished after: " + multiThreaded + " miliseconds\n");
+                end = System.currentTimeMillis();
+                */
+               
+		//System.out.println("Finished sorting after: " + (end - start) + " miliseconds\n");
+                //----------
+                /*
                 Map<Integer, ArrayList<String[]>> sortedRoutes = kb.getSortedRoutes();
                 String[] destinations = new String[kb.getLandmarks().length];
-                // using for-each loop for iteration over Map.entrySet()
                 int length, i = 0;
                 String closestDestinationString = null;
                 for (Map.Entry<Integer, ArrayList<String[]>> entry : sortedRoutes.entrySet()){
@@ -228,71 +277,193 @@ public class QueryController {
                                         destination = currentPath[length - 1];
                                 }
                                 destinations[i] = destination + " (" + entry.getKey().toString() + ")";
-                                System.out.println(destinations[i]);
+                                //System.out.println(destinations[i]);
                                 if(i == 0){
                                      closestDestinationString = destination;  
                                      path = currentPath;
                                 }
                                 i++;
-                        };
+                        }
                         
                 }
-                
-		landmarksListView.getItems().addAll(destinations);
-                
-		pathListView.getItems().addAll(path);
-		
-		resourcesListView.getItems().addAll(PrologQuery.getResourcesFoundInLandmark(closestDestinationString));
-                closestDestination.setText(closestDestinationString);
-                
-                
-                /*
-		int min_pos;
-		if (kb.getOdd_len() < kb.getPair_len()) {
-			min_pos = kb.getOdd_pos();
-		} else {
-			min_pos = kb.getPair_pos();
-		}
-		path = kb.getPaths().get(min_pos);
-                int length = path.length;
-                System.out.println(length);
-                if(length == 0){
-                        destination = origin;
-                }else{
-                        destination = path[path.length - 1];
-                }
                 */
-		
-		// System.out.println("Closest landmark where you can find " + resource + ": " + destination);
-		/*
-                System.out.println("List of landmarks where you can find " + resource);
-		for (int i = 0; i < kb.getDestinations().length; i++) {
-			System.out.println("- " + kb.getDestinations()[i]);
-		}
-                */
-                /*
-                for (int i = 0; i < kb.getLandmarks().length; i++) {
-			System.out.println("- " + kb.getLandmarks()[i]);
-		}
-                */
-                /*
-		landmarksListView.getItems().clear();
-    
-
-		landmarksListView.getItems().addAll(kb.getDestinations());
-                // landmarksListView.getItems().addAll(kb.getLandmarks());
-		pathListView.getItems().clear();
-
-		pathListView.getItems().addAll(path);
+                pathListView.getItems().clear();
+                pathListView.getItems().addAll(path);
+                landmarksListView.getItems().clear();
+                landmarksListView.getItems().addAll(destinations);
+                closestDestination.setText(""); 
+		closestDestination.setText(closestDestinationString);
 		resourcesListView.getItems().clear();
-
-		resourcesListView.getItems().addAll(PrologQuery.getResourcesFoundInLandmark(destination));
-
-		
-                closestDestination.setText(destination);
-                System.out.println();
-*/
+		resourcesListView.getItems().addAll(PrologQuery.getResourcesFoundInLandmark(closestDestinationString));
 	}
+        
+        public void initializePaths(Analysis kb) {
+                String path[] = null;
+		for (int i = 0; i < kb.getLandmarks().length; i++) {
+                        kb.getPaths().add(i,path);
+		}
+        }
+        
+        public void buildDestinationsWithLength(){
+                Map<Integer, ArrayList<String[]>> sortedRoutes = kb.getSortedRoutes();
+                String destination;
+                destinations = new String[kb.getLandmarks().length];
+                int length, i = 0;
+                for (Map.Entry<Integer, ArrayList<String[]>> entry : sortedRoutes.entrySet()){
+                        for (String[] currentPath : entry.getValue()) { 
+                                length = currentPath.length;
+                                if(length == 0){
+                                        destination = origin;
+                                }else{
+                                        destination = currentPath[length - 1];
+                                }
+                                destinations[i] = destination + " (" + entry.getKey().toString() + ")";
+                                //System.out.println(destinations[i]);
+                                if(i == 0){
+                                     closestDestinationString = destination;  
+                                     path = currentPath;
+                                }
+                                i++;
+                        }       
+                }
+        }
+        
+        public long sortPaths(int total){
+                int numberOfDestinations = kb.getLandmarks().length;
+                int start, end;
+                Thread[] T = new Thread[total];
+                // Create Threads
+                for(int i=0;i<total;i++){
+                        start = numberOfDestinations * i / total;
+                        end = numberOfDestinations * (i + 1) / total;
+                        T[i]= new Thread(new Worker(kb, start, end), Integer.toString(i));
+                }
+                long startTime = System.currentTimeMillis();
+                // Start threads
+                for(int i=0;i<total;i++){
+                        T[i].start();
+                }
+                try {
+                        // Wait Threads to join
+                        for(int i=0;i<total;i++){
+                                T[i].join();
+                        }
+                } catch (Exception e) {
+                }
+                long endTime = System.currentTimeMillis();
+                return (endTime - startTime);
+                /*
+                Thread thread3 = new Thread(new Worker(kb, start, end), "Pair");
+		Thread thread4 = new Thread(new Worker(kb, start, end), "Odd");
+                long start = System.currentTimeMillis();
+		thread3.start();
+		thread4.start();
+		try {
+			thread3.join();
+			thread4.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+                long end = System.currentTimeMillis();
+                return (end - start);
+                */
+        }
+        
+        public long singleThreadedSetShortestRouteProlog() {
+                String path[] = null;
+		String destination;
+                long start = System.currentTimeMillis();
+		for (int i = 0; i < kb.getLandmarks().length; i++) {
+			destination = kb.getLandmarks()[i];
+                        path = PrologQuery.shortestRoute(origin, destination);
+                        if(path != null){
+                                kb.getPaths().set(i,path);
+                        }else{
+                                alertError("Incomplete map.", "Cannot reach destinations from origin.");
+                                return 0;
+                        }
+		}
+                long end = System.currentTimeMillis();
+                return (end - start);              
+        }
+        
+        public long singleThreadedSetShortestRouteJava() {
+                String path[] = null;
+		String destination;
+                long start = System.currentTimeMillis();
+		for (int i = 0; i < kb.getLandmarks().length; i++) {
+			destination = kb.getLandmarks()[i];
+                        try {
+                                if(origin.equals(destination)){
+                                        String[] aux = {origin};
+                                        path = aux;                                         
+                                }else{
+                                        path = map.shortestPath(origin,destination).toArray(new String[0]); 
+                                }
+                                kb.getPaths().set(i,path);
+                        } catch (Exception e) {
+                                alertError("Incomplete map.", "Cannot reach destinations from origin.");
+                                kb.setCannotReachDestinations(true);
+                                return 0;
+                        }
+		}
+                long end = System.currentTimeMillis();
+                return (end - start);
+        }
+        
+       
+        
+        public long multiThreadedSetShortestRouteJava(int total){
+                int numberOfDestinations = kb.getLandmarks().length;
+                int start, end;
+                Thread[] T = new Thread[total];
+                // Create Threads
+                for(int i=0;i<total;i++){
+                        start = numberOfDestinations * i / total;
+                        end = numberOfDestinations * (i + 1) / total;
+                        T[i]= new Thread(new ShortestRoute(kb,map,origin,start,end), Integer.toString(i));
+                }
+                long startTime = System.currentTimeMillis();
+                // Start threads
+                for(int i=0;i<total;i++){
+                        T[i].start();
+                }
+                try {
+                        // Wait Threads to join
+                        for(int i=0;i<total;i++){
+                                T[i].join();
+                        }
+                } catch (Exception e) {
+                }
+                long endTime = System.currentTimeMillis();
+                return (endTime - startTime);
+        }
+        
+        public long multiThreadedSortShortestRoute(int total){
+                int numberOfDestinations = kb.getLandmarks().length;
+                int start, end;
+                Thread[] T = new Thread[total];
+                // Create Threads
+                for(int i=0;i<total;i++){
+                        start = numberOfDestinations * i / total;
+                        end = numberOfDestinations * (i + 1) / total;
+                        T[i]= new Thread(new ShortestRoute(kb,map,origin,start,end), Integer.toString(i));
+                }
+                long startTime = System.currentTimeMillis();
+                // Start threads
+                for(int i=0;i<total;i++){
+                        T[i].start();
+                }
+                try {
+                        // Wait Threads to join
+                        for(int i=0;i<total;i++){
+                                T[i].join();
+                        }
+                } catch (Exception e) {
+                }
+                long endTime = System.currentTimeMillis();
+                return (endTime - startTime);
+        }
         
         public void alertError(String header, String text) {
 		Alert alert = new Alert(AlertType.ERROR);

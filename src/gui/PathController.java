@@ -34,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import parallel.Analysis;
@@ -42,6 +43,7 @@ import prolog.PrologQuery;
 public class PathController {
         private String originString;
         private final String file = "pl\\routes.pl";
+        private final String file2 = "pl\\routes-java.pl";
 	private Stage stage;
 	private Scene scene;
 	private Parent root;
@@ -74,12 +76,19 @@ public class PathController {
 	public void initialize() {
 		initializeComboBoxOrigins();
 		setDisableComponents(true);
+                destinationsListView.setPlaceholder(new Label("Please select an origin."));
 	}
 
 	public void initializeListViewDestinations() {
-		destinationsListView.getItems().clear();
 		destinationsArrayStrings = PrologQuery.getListOfDestinationsOfLandmark(originString);
-		destinationsListView.getItems().addAll(destinationsArrayStrings);
+                if(destinationsArrayStrings.length == 0){
+                        destinationsListView.getItems().clear();
+                        destinationsListView.setPlaceholder(new Label("No associated destinations found."));
+                }else{
+                        destinationsListView.getItems().clear();
+                        destinationsListView.getItems().addAll(destinationsArrayStrings);
+                }
+		//destinationsListView.getItems().addAll(destinationsArrayStrings);
 	}
         
         public void initializeComboBoxOrigins() {
@@ -117,6 +126,12 @@ public class PathController {
 			System.out.println("Exception");
 		}
 	}
+        
+        public void resetComponents(){
+                destinationsListView.getItems().clear();
+		setDisableComponents(true);
+                destinationsListView.setPlaceholder(new Label("Please select an origin."));
+        }
 
 	public void setDisableComponents(boolean val) {
 		deleteButton.setDisable(val);
@@ -140,7 +155,8 @@ public class PathController {
                                 originString = Analysis.addSimpleQuotationMarks(originString);
                                 entry = Analysis.addSimpleQuotationMarks(entry);
                                 System.out.println(originString + "-" + entry);
-                                Analysis.deletePath(file, originString, entry);
+                                Analysis.deletePath(file, "route", originString, entry);
+                                Analysis.deletePath(file2, "route_java", originString, entry);
                                 initiliazeComponents();
                                 alertSuccess("Success","The entry was deleted.");
                         }
@@ -169,9 +185,11 @@ public class PathController {
 				String contents = "route(" + originString + "," + entry + ").\n" + "route(" + entry + "," + originString + ").\n";
 				System.out.println(contents);
 				Analysis.insertFile(file, contents);
+                                Analysis.insertFile(file2, "route_java(" + originString + "," + entry + ").\n");
 				initiliazeComponents();
 				addButton.setDisable(true);
                                 alertSuccess("Success","The entry was added.");
+                                System.out.println("here1");
 			} else if (!entryIsLandmark) {
 				alertError("Invalid entry.", "Please enter a valid landmark.");
 			} else {
