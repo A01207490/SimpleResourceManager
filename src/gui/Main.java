@@ -16,6 +16,8 @@ along with Simple Videogame Resource Manager.  If not, see <https://www.gnu.org/
 */
 package gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import prolog.PrologQuery;
@@ -142,6 +144,31 @@ public class Main extends Application {
 		}
                 System.out.printf("%.1f percent, avg = %f\n", (count/length*100), sum/count);
                 */
+                List<String> path;
+                Graph graph = new Graph();
+                graph.addEdge("A", "B");
+                graph.addEdge("A", "C");
+                graph.addEdge("B", "C");
+                graph.addEdge("B", "D");
+                graph.addEdge("C", "D");
+                graph.addEdge("C", "E");
+                graph.addEdge("D", "E");
+                graph.addEdge("D", "F");
+               
+                path = graph.shortestPath("A","F");
+                System.out.println("gui.Main.start()");
+                //path = graph.shortestPath("A","F");
+                path = graph.shortestPath("A","F");
+                        
+                
+                
+                for (int i = 0; i < path.size(); i++) {
+                        String get = path.get(i);
+                        System.out.printf("%s\n", get);
+                }
+                
+             
+
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("Menu.fxml"));
 			Scene scene = new Scene(root);

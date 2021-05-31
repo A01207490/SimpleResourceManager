@@ -31,36 +31,13 @@ import java.util.TreeMap;
 public class Analysis {
 	private String origin;
 	private String[] landmarks;
-	private String[] destinations;
 	private ArrayList<String[]> paths;
         private Map<Integer, ArrayList<String[]>> sortedRoutes;
         private boolean cannotReachDestinations; 
-        //
-	private int pair_len, pair_pos;
-	private int odd_len, odd_pos;
-	private int min, max;
-        
-
-        public int getMin() {
-                return min;
-        }
-
-        public void setMin(int min) {
-                this.min = min;
-        }
-
-        public int getMax() {
-                return max;
-        }
-
-        public void setMax(int max) {
-                this.max = max;
-        }
 
 	public Analysis(String[] landmarks) {
                 this.landmarks = landmarks;
 		paths = new ArrayList<String[]>();
-		destinations = new String[landmarks.length];
                 sortedRoutes = new TreeMap<Integer, ArrayList<String[]>>(); 
                 cannotReachDestinations = false;
 	}  
@@ -283,8 +260,6 @@ public class Analysis {
 		return paths;
 	}     
         
-     
-        
 	public void setPaths(ArrayList<String[]> paths) {
 		this.paths = paths;
 	}
@@ -297,43 +272,4 @@ public class Analysis {
 		this.landmarks = landmarks;
 	}
 
-	public int getPair_len() {
-		return pair_len;
-	}
-
-	public void setPair_len(int par_len) {
-		this.pair_len = par_len;
-	}
-
-	public int getPair_pos() {
-		return pair_pos;
-	}
-
-	public void setPair_pos(int par_pos) {
-		this.pair_pos = par_pos;
-	}
-
-	public int getOdd_len() {
-		return odd_len;
-	}
-
-	public void setOdd_len(int odd_len) {
-		this.odd_len = odd_len;
-	}
-
-	public int getOdd_pos() {
-		return odd_pos;
-	}
-
-	public void setOdd_pos(int odd_pos) {
-		this.odd_pos = odd_pos;
-	}
-
-	public String[] getDestinations() {
-		return destinations;
-	}
-
-	public void setDestinations(String[] destinations) {
-		this.destinations = destinations;
-	}
 }

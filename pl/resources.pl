@@ -147,9 +147,3 @@ resource('Yellow Chuchu Jelly').
 resource('Yellow Lizalfos Tail').
 resource('Zapshroom').
 resource('Test').
-resource('Aaresource1location').
-resource('Aaresource2location').
-resource('Aaresource3location').
-resource('Aaresource4location').
-resource('Aaskull').
-resource('Aaoutresource').

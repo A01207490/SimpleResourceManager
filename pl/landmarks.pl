@@ -701,5 +701,3 @@ landmark('Tahno Oah Shrine').
 landmark('Ancient Shrine««').
 landmark('Great Plateau').
 landmark('Skull Valley').
-landmark('Aaout1').
-landmark('Aaout2').

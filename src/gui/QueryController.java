@@ -178,7 +178,7 @@ public class QueryController {
                 kb = new Analysis(PrologQuery.getLandmarksWhereResourceIsFound(resource));
 		kb.setOrigin(origin);
                 initializePaths(kb);
-                int n = 1;
+                int n = 100;
                 long sum1TP = 0;
                 long sum1TJ = 0;
                 long sum2TJ = 0;
@@ -190,16 +190,7 @@ public class QueryController {
                         //*****Single threaded shortest route prolog
                         //sum1TP += singleThreadedSetShortestRouteProlog();
                         //*****Single threaded shortest route java
-                        //interruption = singleThreadedSetShortestRouteJava();
-                        /*
-                        if(interruption == -10){
-                                //System.out.println(interruption);
-                                return;
-                        }else{
-                                //System.out.println(interruption);
-                                sum1TJ += interruption;
-                        }
-                        */
+                        sum1TJ += singleThreadedSetShortestRouteJava();
                         //*****Two threaded shortest route java
                         sum2TJ += multiThreadedSetShortestRouteJava(2);
                         if(kb.isCannotReachDestinations()){
@@ -207,11 +198,11 @@ public class QueryController {
                                 return;
                         }
                         //*****Three threaded shortest route java
-                        //sum3TJ += multiThreadedSetShortestRouteJava(3);
+                        sum3TJ += multiThreadedSetShortestRouteJava(3);
                         //*****Four threaded shortest route java
-                        //sum4TJ += multiThreadedSetShortestRouteJava(4);
+                        sum4TJ += multiThreadedSetShortestRouteJava(4);
                         //*****Amount of destinations threaded shortest route java
-                        //sumQTJ +=  multiThreadedSetShortestRouteJava(kb.getLandmarks().length);
+                        sumQTJ +=  multiThreadedSetShortestRouteJava(kb.getLandmarks().length);
                 }
                 float avg1TProlog = sum1TP / n;
                 float avg1TJava = sum1TJ / n;
@@ -398,7 +389,7 @@ public class QueryController {
                                         String[] aux = {origin};
                                         path = aux;                                         
                                 }else{
-                                        path = map.shortestPath(origin,destination).toArray(new String[0]); 
+                                        path = map.shortestPath(origin,destination).toArray(new String[0]);  
                                 }
                                 kb.getPaths().set(i,path);
                         } catch (Exception e) {

@@ -56,7 +56,7 @@ public class ShortestRoute implements Runnable {
                                                 String[] aux = {origin};
                                                 path = aux;                                         
                                         }else{
-                                                path = map.shortestPath(origin,destination).toArray(new String[0]); 
+                                                path = map.shortestPath(origin,destination).toArray(new String[0]);
                                         }
                                         kb.getPaths().set(i, path);
                                 }

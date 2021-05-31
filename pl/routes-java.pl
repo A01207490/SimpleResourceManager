@@ -590,4 +590,3 @@ route_java('Ternio Trail','Upland Zorana').
 route_java('Quattas Shelf','Bannan Island').
 route_java('Eldins Flank','Gut Check Rock').
 route_java('Skull Valley','Skull Lake').
-route_java('Aaout2','Aaout1').

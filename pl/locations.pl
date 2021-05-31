@@ -146,9 +146,3 @@ location('Wood',[]).
 location('Yellow Chuchu Jelly',[]).
 location('Yellow Lizalfos Tail',[]).
 location('Zapshroom',['Nautelle Wetlands','Taobab Grassland','Champions Gate','East Gerudo Ruins','Southern Oasis','Gerudo Desert Gateway','Gerudo Canyon','Great Cliffs','Birida Lookout','Dalite Forest','Mount Nabooru','Gerudo Canyon Pass','Second Gatehouse','Mercay Island','Inogo Bridge','Tabahl Woods','Rok Woods','North Akkala Valley','Akkala Wilds','North Akkala Foothill']).
-location('Aaresource1location',['Skull Lake']).
-location('Aaresource2location',['Skull Lake','Rok Woods']).
-location('Aaresource3location',['Skull Lake','Rok Woods','Akkala Wilds']).
-location('Aaresource4location',['Skull Lake','Rok Woods','Akkala Wilds','Bloodleaf Lake']).
-location('Aaskull',['Skull Valley']).
-location('Aaoutresource',[]).
