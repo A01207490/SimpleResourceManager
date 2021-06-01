@@ -147,3 +147,4 @@ resource('Yellow Chuchu Jelly').
 resource('Yellow Lizalfos Tail').
 resource('Zapshroom').
 resource('Test').
+resource('Blueberry').

@@ -44,6 +44,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import parallel.Analysis;
 import parallel.Graph;
@@ -106,6 +107,16 @@ public class QueryController {
                 Collections.sort(resourcesList);
                 Collections.sort(landmarksList);
                 initializeComboBox();
+                String labelText = "Select a resource and an origin.\n\nThen click Submit.";
+                final Label label1 = new Label(labelText);
+                final Label label2 = new Label(labelText);
+                final Label label3 = new Label(labelText);
+                label1.setTextAlignment(TextAlignment.CENTER);
+                label2.setTextAlignment(TextAlignment.CENTER);
+                label3.setTextAlignment(TextAlignment.CENTER);
+                landmarksListView.setPlaceholder(label1);
+                pathListView.setPlaceholder(label2);
+                resourcesListView.setPlaceholder(label3);
 		// TextFields.bindAutoCompletion(resource, resourcesList);
 		// TextFields.bindAutoCompletion(landmark, landmarksList);
 	}
@@ -178,14 +189,27 @@ public class QueryController {
                 kb = new Analysis(PrologQuery.getLandmarksWhereResourceIsFound(resource));
 		kb.setOrigin(origin);
                 initializePaths(kb);
-                int n = 100;
+                if(kb.getLandmarks().length >= 40){
+                        multiThreadedSetShortestRouteJava(5);
+                        
+                }else{
+                        singleThreadedSetShortestRouteJava();
+                }
+                if(kb.isCannotReachDestinations()){
+                        alertError("Incomplete map.", "Cannot reach destinations from origin.");
+                        return;
+                }
+                /*
+                float n = 1;
                 long sum1TP = 0;
                 long sum1TJ = 0;
                 long sum2TJ = 0;
                 long sum3TJ = 0;
                 long sum4TJ = 0;
-                long sumQTJ = 0;
+                //long sumQTJ = 0;
                 long interruption;
+                */
+                /*
                 for (int i = 0; i < n; i++) {
                         //*****Single threaded shortest route prolog
                         //sum1TP += singleThreadedSetShortestRouteProlog();
@@ -202,17 +226,22 @@ public class QueryController {
                         //*****Four threaded shortest route java
                         sum4TJ += multiThreadedSetShortestRouteJava(4);
                         //*****Amount of destinations threaded shortest route java
-                        sumQTJ +=  multiThreadedSetShortestRouteJava(kb.getLandmarks().length);
+                        //sumQTJ +=  multiThreadedSetShortestRouteJava(kb.getLandmarks().length);
                 }
-                float avg1TProlog = sum1TP / n;
-                float avg1TJava = sum1TJ / n;
-                float avg2TJava = sum2TJ / n;
-                float avg3TJava = sum3TJ / n;
-                float avg4TJava = sum4TJ / n;
-                float avgQTJava = sumQTJ / n;
-                System.out.printf("\nQuerying %d paths\n1TP = %fms\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n%dTJ = %fms\n", kb.getLandmarks().length, avg1TProlog, avg1TJava, avg2TJava, avg3TJava, avg4TJava, kb.getLandmarks().length, avgQTJava);
+                */
+                //float avg1TProlog = (float) sum1TP / n;
+                //float avg1TJava = (float) sum1TJ / n;
+                //float avg2TJava = (float) sum2TJ / n;
+                //float avg3TJava = (float) sum3TJ / n;
+                //float avg4TJava = (float) sum4TJ / n;
+                //float avgQTJava = (float) sumQTJ / n;
+                //System.out.println("\n------------------------");
+                //System.out.printf("\nAverage of %d runs\n", (int) n);
+                //System.out.printf("\nQuerying %d paths\n1TP = %fms\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n%dTJ = %fms\n", kb.getLandmarks().length, avg1TProlog, avg1TJava, avg2TJava, avg3TJava, avg4TJava, kb.getLandmarks().length, avgQTJava);
+                //System.out.printf("\nQuerying %d destinations\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n", kb.getLandmarks().length, avg1TJava, avg2TJava, avg3TJava, avg4TJava);
                 //*****Sort
-                n = 100;
+                singleThreadedSortPaths();
+                /*
                 sum1TJ = 0;
                 sum2TJ = 0;
                 sum3TJ = 0;
@@ -232,29 +261,13 @@ public class QueryController {
                         sum4TJ += sortPaths(4);
                 }
                 buildDestinationsWithLength();
-                avg1TJava = sum1TJ / n;
-                avg2TJava = sum2TJ / n;
-                avg3TJava = sum3TJ / n;
-                avg4TJava = sum4TJ / n;
+                avg1TJava = (float) sum1TJ / n;
+                avg2TJava = (float) sum2TJ / n;
+                avg3TJava = (float) sum3TJ / n;
+                avg4TJava = (float) sum4TJ / n;
                 System.out.printf("\nSorting %d paths\n1TJ = %fms\n2TJ = %fms\n3TJ = %fms\n4TJ = %fms\n", kb.getLandmarks().length, avg1TJava, avg2TJava, avg3TJava, avg4TJava);
-                /*
-		Thread thread3 = new Thread(new Worker(kb), "Pair");
-		Thread thread4 = new Thread(new Worker(kb), "Odd");
-                start = System.currentTimeMillis();
-		thread3.start();
-		thread4.start();
-		try {
-			thread3.join();
-			thread4.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-                end = System.currentTimeMillis();
                 */
-               
-		//System.out.println("Finished sorting after: " + (end - start) + " miliseconds\n");
-                //----------
-                /*
+                
                 Map<Integer, ArrayList<String[]>> sortedRoutes = kb.getSortedRoutes();
                 String[] destinations = new String[kb.getLandmarks().length];
                 int length, i = 0;
@@ -277,7 +290,7 @@ public class QueryController {
                         }
                         
                 }
-                */
+                
                 pathListView.getItems().clear();
                 pathListView.getItems().addAll(path);
                 landmarksListView.getItems().clear();
@@ -319,6 +332,19 @@ public class QueryController {
                 }
         }
         
+        public void singleThreadedSortPaths(){
+		String path[];
+		int length;
+                for (int i = 0; i < kb.getPaths().size(); i++) {
+			path = kb.getPaths().get(i);
+			length = path.length;
+                        if(!kb.getSortedRoutes().containsKey(length)){
+                                kb.getSortedRoutes().put(length, new ArrayList<String[]>());
+                        }
+                        kb.getSortedRoutes().get(length).add(path);
+		}
+        }
+        
         public long sortPaths(int total){
                 int numberOfDestinations = kb.getLandmarks().length;
                 int start, end;
@@ -343,21 +369,6 @@ public class QueryController {
                 }
                 long endTime = System.currentTimeMillis();
                 return (endTime - startTime);
-                /*
-                Thread thread3 = new Thread(new Worker(kb, start, end), "Pair");
-		Thread thread4 = new Thread(new Worker(kb, start, end), "Odd");
-                long start = System.currentTimeMillis();
-		thread3.start();
-		thread4.start();
-		try {
-			thread3.join();
-			thread4.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-                long end = System.currentTimeMillis();
-                return (end - start);
-                */
         }
         
         public long singleThreadedSetShortestRouteProlog() {
@@ -393,7 +404,6 @@ public class QueryController {
                                 }
                                 kb.getPaths().set(i,path);
                         } catch (Exception e) {
-                                alertError("Incomplete map.", "Cannot reach destinations from origin.");
                                 kb.setCannotReachDestinations(true);
                                 return 0;
                         }

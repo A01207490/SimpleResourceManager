@@ -5,10 +5,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.LocationController">
    <children>
@@ -16,18 +18,28 @@
          <center>
             <VBox spacing="10.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label text="Resource" />
-                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
+                        <Label text="Locations">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Label text="Resource" />
                         <ComboBox fx:id="resourceComboBox" onMouseClicked="#resetComponents" prefWidth="150.0" />
                         <Button mnemonicParsing="false" onAction="#onActionComboBoxResource" text="Select" />
                      </children>
                   </HBox>
+                  <Separator prefWidth="200.0" />
                   <Label text="Found at" />
                   <ListView fx:id="landmarkListView" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Label text="New Landmark" />
+                        <Label text="New landmark" />
                         <ComboBox fx:id="landmarkComboBox" prefWidth="150.0" />
                         <Button fx:id="addButton" mnemonicParsing="false" onAction="#insert" text="Add" />
                         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#delete" text="Delete" />

@@ -1164,5 +1164,3 @@ route('Upland Zorana','Ternio Trail').
 route('Bannan Island','Quattas Shelf').
 route('Gut Check Rock','Eldins Flank').
 route('Eldins Flank','Gut Check Rock').
-route('Skull Valley','Skull Lake').
-route('Skull Lake','Skull Valley').
